@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="blueLight">#1F3F9C</color>
+    <color name="blueDark">#586994</color>
+    <color name="blueDarkWithOpacity">#59586994</color>
+    <color name="textDark">#353535</color>
+    <color name="textSubTitle">#848484</color>
+    <color name="progressColor">#5472BC</color>
+    <color name="cardDark">#475D93</color>
+    <color name="cardLight">#F6F7F9</color>
+    <color name="textDayFirst">#DFDDDD</color>
+</resources>
