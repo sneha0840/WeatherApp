@@ -74,6 +74,9 @@ class HomeFragment : Fragment() {
             Picasso.with(activity).load(iconUrl).resize(200, 200).into(binding.icon)
         })
 
+        homeViewModel.weatherTip.observe(viewLifecycleOwner, Observer { tip ->
+            binding.tvWeatherTip.text = tip
+        })
         dayRecyclerView = binding.bottom
         homeViewModel.listDayWeather.observe(viewLifecycleOwner, Observer {
             dayAdapter = CardAdapter(it)

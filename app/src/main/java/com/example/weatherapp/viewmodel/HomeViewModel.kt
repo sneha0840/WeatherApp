@@ -23,6 +23,12 @@ import java.util.*
 import kotlin.collections.ArrayList
 import kotlin.math.roundToInt
 
+import com.example.weatherapp.api.GeminiApi
+import com.example.weatherapp.model.GeminiRequest
+import com.example.weatherapp.model.GeminiContent
+import com.example.weatherapp.model.GeminiPart
+import com.example.weatherapp.BuildConfig
+
 class HomeViewModel : ViewModel() {
     private val _response = MutableLiveData<String>()
     val response: LiveData<String>
@@ -31,7 +37,9 @@ class HomeViewModel : ViewModel() {
     private var _weather = MutableLiveData<Weather>()
     val weather: LiveData<Weather>
         get() = _weather
-
+    private var _weatherTip = MutableLiveData<String>()
+    val weatherTip: LiveData<String>
+        get() = _weatherTip
     private var _listDayWeather = MutableLiveData<ArrayList<DayWeather>>()
         .apply { postValue(ArrayList()) }
     val listDayWeather: LiveData<ArrayList<DayWeather>>
@@ -48,10 +56,29 @@ class HomeViewModel : ViewModel() {
                 val result =
                     WeatherApi.retrofitService.getCurrentWeatherData(LATITUDE, LONGITUDE, APPID)
                 _weather.value = result
-
+                result.main?.temp?.minus(KELVIN_TO_CELSIUS)?.let { tempC ->
+                    result.weather.firstOrNull()?.description?.let { condition ->
+                        getWeatherTip(tempC.toFloat(), condition)
+                    }
+                }
                 _response.value = "Success!!!"
             } catch (e: Exception) {
                 _response.value = "Failure: ${e.message}"
+                Log.i("VM", e.toString())
+            }
+        }
+    }
+    private fun getWeatherTip(temp: Float, condition: String) {
+        viewModelScope.launch {
+            try {
+                val prompt = "Weather: ${temp}°C, $condition. Give a one-sentence practical tip in under 15 words."
+                val result = GeminiApi.service.getWeatherSummary(
+                    apiKey = BuildConfig.GEMINI_API_KEY,
+                    request = GeminiRequest(contents = listOf(GeminiContent(parts = listOf(GeminiPart(text = prompt)))))
+                )
+                _weatherTip.value = result.candidates.firstOrNull()?.content?.parts?.firstOrNull()?.text ?: "No tip available"
+            } catch (e: Exception) {
+                _weatherTip.value = "Tip unavailable"
                 Log.i("VM", e.toString())
             }
         }

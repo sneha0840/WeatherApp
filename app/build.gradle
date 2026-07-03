@@ -1,7 +1,14 @@
+
 plugins {
     id 'com.android.application'
     id 'kotlin-android'
 }
+def localProperties = new Properties()
+def localPropertiesFile = rootProject.file('local.properties')
+if (localPropertiesFile.exists()) {
+    localProperties.load(new FileInputStream(localPropertiesFile))
+}
+
 
 android {
     compileSdkVersion 30
@@ -9,16 +16,18 @@ android {
 
     buildFeatures{
         viewBinding true
+        buildConfig true
     }
 
     defaultConfig {
         applicationId "com.example.weatherapp"
         minSdkVersion 19
+        buildConfigField "String", "GEMINI_API_KEY", "\"${localProperties.getProperty('GEMINI_API_KEY', '')}\""
         targetSdkVersion 30
         versionCode 1
         versionName "1.0"
 //        multiDexEnabled true
-
+        buildConfigField "String", "GEMINI_API_KEY", "\"${localProperties.getProperty('GEMINI_API_KEY', '')}\""
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
 
