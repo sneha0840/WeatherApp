@@ -1,3 +1,3 @@
 # Weather-Android-App-Kotlin
-Simple weather app using Kotlin
+Weather app using Kotlin
 
